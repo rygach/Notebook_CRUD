@@ -25,5 +25,10 @@ QVariant ContactsModel::data(const QModelIndex &index, int role) const
 
 QHash<int, QByteArray> ContactsModel::roleNames() const
 {
+    QHash<int, QByteArray> roles;
+    roles[NameRole] = "name";
+    roles[EmailRole] = "email";
 
+    qDebug() << "roleNames() is called";
+    return roles;
 }
