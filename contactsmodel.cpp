@@ -62,3 +62,41 @@ void ContactsModel::appendEmptyRow()
 {
     insertRows(rowCount(), 1, QModelIndex());
 }
+
+bool ContactsModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (!index.isValid()) return false;
+
+    Contact & item = m_items[index.row()];
+    switch (role) {
+    case (NameRole):
+        item.name = value.toString();
+        break;
+    case (EmailRole):
+        item.email = value.toString();
+        break;
+    default:
+        return false;
+    }
+
+    emit dataChanged(index, index, {role});
+
+    return true;
+}
+
+bool ContactsModel::removeRows(int row, int count, const QModelIndex &parent)
+{
+    if (row < 0 || row > rowCount() || row + count < 0 || row + count > rowCount()) return false;
+
+    beginRemoveRows(parent, row, row + count -1);
+
+    m_items.erase(m_items.begin() + row, m_items.begin() + row + count);
+
+    endRemoveRows();
+    return true;
+}
+
+void ContactsModel::removeAt(int row)
+{
+    removeRows(row, 1, QModelIndex());
+}

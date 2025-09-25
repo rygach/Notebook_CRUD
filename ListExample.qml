@@ -1,5 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.0
 
 ListView {
     id: list
@@ -10,10 +11,29 @@ ListView {
     // пример представления элемента в списке, кстати, Frame - шаблон отображения, его можно заменить на другой элемент
     delegate: Frame {
         width: list.width
-        Text {
-            text: name + ": " + email
-            font.pointSize: 16
-            anchors.centerIn: parent
+        RowLayout {
+            Layout.alignment: Qt.AlignHCenter
+            EditableText {
+                field: name
+            }
+
+            Text {
+                text: " : "
+                font.pointSize: 16
+            }
+
+            EditableText {
+                field: email
+            }
+        }
+
+        Button {
+            Layout.alignment: Qt.AlignRight
+            text: "-"
+            onClicked: {
+                list.model.removeAt(model.row);
+            }
+            font.pointSize: 20
         }
     }
 

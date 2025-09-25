@@ -19,6 +19,7 @@ set(PROJECT_SOURCES
     contactsmodel.h
     main.qml         # <-- добавьте сюда реальный путь к main.qml в исходниках
     qml.qrc
+
 )
 
 if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -34,6 +35,8 @@ if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         VERSION 1.0
         QML_FILES main.qml        # перечислите исходные QML-файлы (не только qrc)
         SOURCES contactsmodel.cpp contactsmodel.h
+        QML_FILES EditableText.qml
+        QML_FILES EditableText.qml
     )
 
     target_link_libraries(Notebook_CRUD

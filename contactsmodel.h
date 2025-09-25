@@ -32,9 +32,16 @@ public:
     virtual bool insertRows(int row, int count, const QModelIndex &parent) override;
     Q_INVOKABLE void appendEmptyRow();
 
+    // реализация редактирования строки контакта
+    virtual bool setData(const QModelIndex &index, const QVariant &value, int role) override;
+
+    // функционал удаления строки
+    virtual bool removeRows(int row, int count, const QModelIndex &parent) override;
+    Q_INVOKABLE void removeAt(int row);
+
+
 private:
     std::vector<Contact> m_items;
-
 };
 
 #endif // CONTACTSMODEL_H
