@@ -3,9 +3,6 @@ import QtQuick 2.15
 GridView {
     width: 200
     height: 300
-    model: ExampleDataset {
-
-    }
 
     delegate: Column {
         Text {

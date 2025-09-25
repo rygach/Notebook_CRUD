@@ -5,6 +5,7 @@
 #include <QAbstractListModel>
 #include <QQmlEngine>
 #include <vector>
+#include <qqml.h>
 
 class ContactsModel : public QAbstractListModel
 {
@@ -27,8 +28,13 @@ public:
     virtual QVariant data(const QModelIndex &index, int role) const override;
     virtual QHash<int, QByteArray> roleNames() const override;
 
+    // реализация добавления строк в таблицу чтоли, хуй знает, не понял для чего
+    virtual bool insertRows(int row, int count, const QModelIndex &parent) override;
+    Q_INVOKABLE void appendEmptyRow();
+
 private:
     std::vector<Contact> m_items;
+
 };
 
 #endif // CONTACTSMODEL_H

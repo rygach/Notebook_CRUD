@@ -6,7 +6,6 @@ ListView {
     width: 300
     height: 200
     spacing: 5
-    model: ExampleDataset {}
 
     // пример представления элемента в списке, кстати, Frame - шаблон отображения, его можно заменить на другой элемент
     delegate: Frame {
