@@ -4,50 +4,51 @@ import QtQuick.Layouts 1.0
 
 RowLayout {
     id: root
-    property alias field: displayField.text   // двунаправленной привязки здесь нет — смотрим только отображение
-    // для логов можно задать optional property int row: -1
+    // Публичные свойства для двунаправленной работы
+    property string field: ""
+    property bool editing: false
+    signal committed(string value)
 
     // Text отображается, когда не редактируем
     Text {
         id: displayField
-        text: ""
+        text: root.field
         font.pointSize: 16
-        visible: !editField.visible && text.length > 0
+        visible: !root.editing && text.length > 0
 
         MouseArea {
             anchors.fill: parent
-            onClicked: {
-                editField.visible = true
-                editField.forceActiveFocus()
-            }
+            onClicked: { root.editing = true; editField.forceActiveFocus() }
         }
     }
 
     // TextField для редактирования
     TextField {
         id: editField
-        visible: false
-        text: displayField.text
+        visible: root.editing
+        text: root.field
+        selectByMouse: true
+        focus: visible
 
         // при окончании редактирования обновляем поле (и делаем кнопку видимой/невидимой)
-        onEditingFinished: {
-            if (text.length !== 0) {
-                // обновляем текст, который отображается
-                displayField.text = text
-            }
-            editField.visible = false
-        }
+        Keys.onReturnPressed: { commitChange() }
+        Keys.onEnterPressed: { commitChange() }
+        Keys.onEscapePressed: { root.editing = false }
+        onEditingFinished: commitChange()
     }
 
-    Component.onCompleted: {
-        // Лог один раз при создании. Если нужно отслеживать изменения — добавь onTextChanged ниже.
-        console.log("EditableText created, field =", displayField.text)
+    function commitChange() {
+        if (editField.text !== root.field) {
+            root.field = editField.text
+            root.committed(root.field)
+        }
+        root.editing = false
     }
+
+    Component.onCompleted: console.log("EditableText created, field =", root.field)
 
     // Лог при изменении поля (удалить/закомментировать в релизе)
-    onFieldChanged: {
-        console.log("EditableText.field changed ->", displayField.text)
-    }
+    onFieldChanged: console.log("EditableText.field changed ->", root.field)
 }
 
 

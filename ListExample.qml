@@ -4,85 +4,91 @@ import QtQuick.Layouts 1.0
 
 ListView {
     id: list
-    width: 300
-    height: 200
-    spacing: 5
-    model: contactsModel
+    // используем отдельное имя, чтобы не конфликтовать с ListView.model
+    required property var itemsModel
+    clip: true
+    spacing: 6
+    Layout.fillWidth: true
+    Layout.fillHeight: true
+    model: itemsModel
 
     // пример представления элемента в списке, кстати, Frame - шаблон отображения, его можно заменить на другой элемент
-    delegate: Frame {
+    delegate: SwipeDelegate {
+        id: rowDelegate
         width: list.width
-        implicitHeight: 48   // высота делегата
+        implicitHeight: 48
         padding: 6
 
-        RowLayout {
-            anchors.fill: parent
+        contentItem: RowLayout {
             spacing: 8
 
-            // Главная секция — занимает всё доступное место
             RowLayout {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
                 spacing: 6
 
-                // Имя — фиксируем минимальную/предпочтительную ширину
                 EditableText {
-                    field: name
-                    Layout.preferredWidth: 120
-                    Layout.minimumWidth: 80
+                    field: model.name
+                    Layout.preferredWidth: 140
+                    Layout.minimumWidth: 100
                     Layout.alignment: Qt.AlignVCenter
-                    // Внутри вашего EditableText можно включить elide/clip,
-                    // чтобы текст не ломал разметку.
+                    onCommitted: function(value) {
+                        list.model.setData(list.model.index(model.row, 0), value, 256) // NameRole = 256
+                    }
                 }
 
                 Text {
                     text: ":"
-                    font.pointSize: 16
+                    font.pixelSize: 16
                     Layout.alignment: Qt.AlignVCenter
                 }
 
-                // Email тянется и занимает оставшееся пространство
                 EditableText {
-                    field: email
+                    field: model.email
                     Layout.fillWidth: true
-                    Layout.preferredWidth: 220
-                    Layout.minimumWidth: 120
+                    Layout.preferredWidth: 240
+                    Layout.minimumWidth: 140
                     Layout.alignment: Qt.AlignVCenter
-                    // если ваш EditableText использует Text — добавьте elide: Text.ElideRight
+                    onCommitted: function(value) {
+                        list.model.setData(list.model.index(model.row, 0), value, 257) // EmailRole = 257
+                    }
                 }
             }
+        }
 
-            // Кнопка удаления — фиксированный аккуратный размер
-            Button {
-                text: "-"
-                font.pointSize: 16
-                Layout.preferredWidth: 32
-                Layout.maximumWidth: 36
-                Layout.preferredHeight: 32
-                Layout.alignment: Qt.AlignVCenter
-                onClicked: list.model.removeAt(model.row)
+        swipe.right: Rectangle {
+            width: parent.height
+            height: parent.height
+            anchors.right: parent.right
+            color: "tomato"
+
+            ToolButton {
+                anchors.fill: parent
+                text: qsTr("Delete")
+                Accessible.name: qsTr("Delete contact")
+                onClicked: {
+                    list.model.removeAt(model.row)
+                }
             }
         }
     }
 
-    header: Rectangle {
-        width: parent.width
-        height: 30
-        color: "red"
-        Text {
-            text: "Contacts list"
-            color: "white"
-            font.pointSize: 18
-            anchors.horizontalCenter: parent.horizontalCenter
-        }
-    }
+    header: Loader { active: false }
 
-    // z - указ
-    footer: Rectangle {
+    footer: Item {
         width: parent.width
-        height: 20
-        color: "red"
-        z: 10
+        height: model && model.count === 0 ? 120 : 0
+
+        Column {
+            anchors.centerIn: parent
+            spacing: 8
+
+            Label { text: qsTr("No contacts yet") }
+            Button {
+                text: qsTr("Add contact")
+                onClicked: list.model.appendEmptyRow()
+            }
+        }
     }
     footerPositioning: ListView.OverlayFooter
 }

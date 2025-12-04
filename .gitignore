@@ -1,82 +1,58 @@
-# This file is used to ignore files which are generated
-# ----------------------------------------------------------------------------
-
-*~
-*.autosave
-*.a
-*.core
-*.moc
-*.o
-*.obj
-*.orig
-*.rej
-*.so
-*.so.*
-*_pch.h.cpp
-*_resource.rc
-*.qm
-.#*
-*.*#
-core
-!core/
-tags
-.DS_Store
-.directory
-*.debug
-Makefile*
-*.prl
-*.app
-moc_*.cpp
-ui_*.h
-qrc_*.cpp
-Thumbs.db
-*.res
-*.rc
-/.qmake.cache
-/.qmake.stash
-
-# qtcreator generated files
-*.pro.user*
-*.qbs.user*
+# Qt Creator пользовательские настройки
+*.user
+*.user.*
 CMakeLists.txt.user*
 
-# xemacs temporary files
-*.flc
+# Папки сборки
+build/
+cmake-build-*/
+.cmake/
 
-# Vim temporary files
-.*.swp
+# CMake временные файлы
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+*.ninja
+.ninja_deps
+.ninja_log
+compile_commands.json
 
-# Visual Studio generated files
-*.ib_pdb_index
-*.idb
-*.ilk
-*.pdb
-*.sln
-*.suo
-*.vcproj
-*vcproj.*.*.user
-*.ncb
-*.sdf
-*.opensdf
-*.vcxproj
-*vcxproj.*
+# Автогенерированные файлы Qt
+*_autogen/
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
 
-# MinGW generated files
-*.Debug
-*.Release
-
-# Python byte code
-*.pyc
-
-# Binaries
-# --------
-*.dll
+# Исполняемые файлы
 *.exe
+*.app
+*.o
+*.obj
+*.dll
+*.so
+*.dylib
 
-# Directories with generated files
-.moc/
-.obj/
-.pch/
-.rcc/
-.uic/
-/build*/
+# IDE специфичные файлы
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Временные файлы
+*.log
+*.tmp
+*.bak
+*.orig
+
+# Windows специфичные
+Thumbs.db
+Desktop.ini
+
+# macOS специфичные
+.DS_Store
+
+# Тестовые файлы
+test.cpp
+test.exe

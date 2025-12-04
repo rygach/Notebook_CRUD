@@ -8,6 +8,23 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Настройка для Windows: добавляем пути к Qt из MSYS2
+if(WIN32 AND NOT DEFINED CMAKE_PREFIX_PATH)
+    # Возможные пути установки Qt
+    set(QT_SEARCH_PATHS
+        "C:/msys64/mingw64"
+        "C:/Qt/5.15.17/mingw81_64"
+        "C:/Qt/5.15/mingw81_64"
+    )
+    
+    foreach(QT_PATH ${QT_SEARCH_PATHS})
+        if(EXISTS "${QT_PATH}")
+            list(APPEND CMAKE_PREFIX_PATH "${QT_PATH}")
+            message(STATUS "Added Qt path: ${QT_PATH}")
+        endif()
+    endforeach()
+endif()
+
 # Найдём Qt (любую из версий 5 или 6). Просим Core, Quick и Qml
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Quick Qml)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Quick Qml)
