@@ -1,37 +1,38 @@
 #include "contactsmodel.h"
-#include "QDebug"
 
 ContactsModel::ContactsModel(QObject *parent)
     : QAbstractListModel{parent}
 {
-    m_items = std::vector<Contact>(
-        {
-            {QStringLiteral("Bill NG"), QStringLiteral("bill@mail.com")},
-            {QStringLiteral("John NG"), QStringLiteral("john@mail.com")},
-            {QStringLiteral("Sam NG"), QStringLiteral("sam@mail.com")}
-        });
+    // Примеры контактов для демонстрации
+    m_items = std::vector<Contact>({
+        {QStringLiteral("Alice Johnson"), QStringLiteral("alice.johnson@example.com")},
+        {QStringLiteral("Bob Smith"), QStringLiteral("bob.smith@company.com")},
+        {QStringLiteral("Charlie Brown"), QStringLiteral("charlie@email.com")}
+    });
 }
 
-int ContactsModel::rowCount(const QModelIndex &parent = QModelIndex()) const
+int ContactsModel::rowCount(const QModelIndex &parent) const
 {
-    qDebug() << "rowCount() is called";
-    return m_items.size();
+    Q_UNUSED(parent);
+    return static_cast<int>(m_items.size());
 }
 
 QVariant ContactsModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid()) return QVariant(false);
-
-    qDebug() << "data() is called";
-
-    switch (role) {
-    case NameRole:
-        return m_items[index.row()].name;
-    case EmailRole:
-        return m_items[index.row()].email;
+    if (!index.isValid() || index.row() >= rowCount()) {
+        return QVariant();
     }
 
-    return QVariant(false);
+    const Contact &contact = m_items[index.row()];
+    
+    switch (role) {
+    case NameRole:
+        return contact.name;
+    case EmailRole:
+        return contact.email;
+    default:
+        return QVariant();
+    }
 }
 
 QHash<int, QByteArray> ContactsModel::roleNames() const
@@ -39,8 +40,6 @@ QHash<int, QByteArray> ContactsModel::roleNames() const
     QHash<int, QByteArray> roles;
     roles[NameRole] = "name";
     roles[EmailRole] = "email";
-
-    qDebug() << "roleNames() is called";
     return roles;
 }
 

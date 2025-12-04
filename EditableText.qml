@@ -2,38 +2,74 @@ import QtQuick 2.15
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.0
 
-RowLayout {
+Item {
     id: root
-    // Публичные свойства для двунаправленной работы
     property string field: ""
+    property string placeholderText: qsTr("Enter text...")
     property bool editing: false
     signal committed(string value)
+    
+    Layout.fillWidth: true
+    implicitHeight: 26
 
-    // Text отображается, когда не редактируем
-    Text {
+    // Text отображается когда не редактируем
+    Label {
         id: displayField
-        text: root.field
-        font.pointSize: 16
-        visible: !root.editing && text.length > 0
-
+        anchors.fill: parent
+        anchors.leftMargin: 0
+        anchors.rightMargin: 0
+        text: root.field.length > 0 ? root.field : root.placeholderText
+        font.pixelSize: 14
+        color: root.field.length > 0 ? palette.text : palette.placeholderText
+        visible: !root.editing
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignLeft
+        elide: Text.ElideRight
+        
         MouseArea {
             anchors.fill: parent
-            onClicked: { root.editing = true; editField.forceActiveFocus() }
+            cursorShape: Qt.PointingHandCursor
+            hoverEnabled: true
+            
+            onEntered: parent.font.underline = true
+            onExited: parent.font.underline = false
+            onClicked: {
+                root.editing = true
+                editField.forceActiveFocus()
+                editField.selectAll()
+            }
         }
     }
 
     // TextField для редактирования
     TextField {
         id: editField
+        anchors.fill: parent
         visible: root.editing
         text: root.field
+        placeholderText: root.placeholderText
         selectByMouse: true
         focus: visible
-
-        // при окончании редактирования обновляем поле (и делаем кнопку видимой/невидимой)
-        Keys.onReturnPressed: { commitChange() }
-        Keys.onEnterPressed: { commitChange() }
-        Keys.onEscapePressed: { root.editing = false }
+        font.pixelSize: 14
+        leftPadding: 4
+        rightPadding: 4
+        topPadding: 0
+        bottomPadding: 0
+        verticalAlignment: TextInput.AlignVCenter
+        
+        background: Rectangle {
+            color: "transparent"
+            border.color: palette.highlight
+            border.width: editField.activeFocus ? 2 : 1
+            radius: 2
+        }
+        
+        Keys.onReturnPressed: commitChange()
+        Keys.onEnterPressed: commitChange()
+        Keys.onEscapePressed: {
+            text = root.field
+            root.editing = false
+        }
         onEditingFinished: commitChange()
     }
 
@@ -44,42 +80,4 @@ RowLayout {
         }
         root.editing = false
     }
-
-    Component.onCompleted: console.log("EditableText created, field =", root.field)
-
-    // Лог при изменении поля (удалить/закомментировать в релизе)
-    onFieldChanged: console.log("EditableText.field changed ->", root.field)
 }
-
-
-// RowLayout {
-//     required property string field;
-
-//     Text {
-//         id: nameText
-//         text: field
-//         font.pointSize: 16
-//         visible: field.length !== 0
-
-//         MouseArea {
-//             anchors.fill: nameText
-//             onClicked: {
-//                 nameText.visible = false;
-//                 nameEditField.visible = true;
-//             }
-//         }
-//     }
-//     TextField {
-//         id: nameEditField
-//         visible: field.length === 0
-//         text: field
-
-//         onEditingFinished: {
-//             if (text.length !== 0) {
-//                 field = text
-//                 nameText.visible = true;
-//                 nameEditField.visible = false;
-//             }
-//         }
-//     }
-// }

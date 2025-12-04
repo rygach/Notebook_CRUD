@@ -2,8 +2,6 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>ListExample.qml</file>
-        <file>ExampleDataset.qml</file>
-        <file>GridExample.qml</file>
         <file>EditableText.qml</file>
     </qresource>
 </RCC>

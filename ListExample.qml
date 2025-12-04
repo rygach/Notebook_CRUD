@@ -4,91 +4,133 @@ import QtQuick.Layouts 1.0
 
 ListView {
     id: list
-    // используем отдельное имя, чтобы не конфликтовать с ListView.model
     required property var itemsModel
     clip: true
-    spacing: 6
+    spacing: 1
     Layout.fillWidth: true
     Layout.fillHeight: true
     model: itemsModel
+    
+    ScrollBar.vertical: ScrollBar {
+        policy: ScrollBar.AsNeeded
+    }
 
-    // пример представления элемента в списке, кстати, Frame - шаблон отображения, его можно заменить на другой элемент
     delegate: SwipeDelegate {
         id: rowDelegate
         width: list.width
-        implicitHeight: 48
-        padding: 6
+        implicitHeight: 64
+        padding: 12
+        
+        // Локальные свойства для реактивности
+        property string contactName: model.name
+        property string contactEmail: model.email
+        
+        background: Rectangle {
+            color: rowDelegate.pressed ? Qt.darker(palette.base, 1.05) : 
+                   rowDelegate.hovered ? Qt.lighter(palette.base, 1.02) : 
+                   palette.base
+            
+            Rectangle {
+                anchors.bottom: parent.bottom
+                width: parent.width
+                height: 1
+                color: palette.mid
+                opacity: 0.3
+            }
+        }
 
         contentItem: RowLayout {
-            spacing: 8
+            spacing: 16
 
-            RowLayout {
-                Layout.fillWidth: true
+            // Иконка контакта
+            Rectangle {
+                width: 44
+                height: 44
+                radius: 22
+                color: Qt.rgba(0.2, 0.6, 0.9, 0.15)
+                border.color: Qt.rgba(0.2, 0.6, 0.9, 0.3)
+                border.width: 1
                 Layout.alignment: Qt.AlignVCenter
-                spacing: 6
+                
+                Label {
+                    anchors.centerIn: parent
+                    text: rowDelegate.contactName.length > 0 ? rowDelegate.contactName.charAt(0).toUpperCase() : "?"
+                    font.pixelSize: 20
+                    font.bold: true
+                    color: Qt.rgba(0.2, 0.6, 0.9, 1.0)
+                }
+            }
+
+            // Поля контакта
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.minimumWidth: 200
+                Layout.alignment: Qt.AlignVCenter
+                spacing: 4
 
                 EditableText {
-                    field: model.name
-                    Layout.preferredWidth: 140
-                    Layout.minimumWidth: 100
-                    Layout.alignment: Qt.AlignVCenter
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 22
+                    field: rowDelegate.contactName
+                    placeholderText: qsTr("Name")
                     onCommitted: function(value) {
-                        list.model.setData(list.model.index(model.row, 0), value, 256) // NameRole = 256
+                        list.model.setData(list.model.index(model.row, 0), value, 256)
+                        rowDelegate.contactName = value
                     }
                 }
 
-                Text {
-                    text: ":"
-                    font.pixelSize: 16
-                    Layout.alignment: Qt.AlignVCenter
-                }
-
                 EditableText {
-                    field: model.email
                     Layout.fillWidth: true
-                    Layout.preferredWidth: 240
-                    Layout.minimumWidth: 140
-                    Layout.alignment: Qt.AlignVCenter
+                    Layout.preferredHeight: 22
+                    field: rowDelegate.contactEmail
+                    placeholderText: qsTr("Email")
                     onCommitted: function(value) {
-                        list.model.setData(list.model.index(model.row, 0), value, 257) // EmailRole = 257
+                        list.model.setData(list.model.index(model.row, 0), value, 257)
+                        rowDelegate.contactEmail = value
                     }
                 }
             }
         }
 
         swipe.right: Rectangle {
-            width: parent.height
+            width: 80
             height: parent.height
             anchors.right: parent.right
-            color: "tomato"
+            color: "#e74c3c"
 
-            ToolButton {
-                anchors.fill: parent
-                text: qsTr("Delete")
-                Accessible.name: qsTr("Delete contact")
-                onClicked: {
-                    list.model.removeAt(model.row)
+            Column {
+                anchors.centerIn: parent
+                spacing: 4
+                
+                Label {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: "🗑️"
+                    font.pixelSize: 24
+                }
+                
+                Label {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: qsTr("Delete")
+                    font.pixelSize: 11
+                    color: "white"
                 }
             }
-        }
-    }
 
-    header: Loader { active: false }
-
-    footer: Item {
-        width: parent.width
-        height: model && model.count === 0 ? 120 : 0
-
-        Column {
-            anchors.centerIn: parent
-            spacing: 8
-
-            Label { text: qsTr("No contacts yet") }
-            Button {
-                text: qsTr("Add contact")
-                onClicked: list.model.appendEmptyRow()
+            MouseArea {
+                anchors.fill: parent
+                onClicked: list.model.removeAt(model.row)
             }
         }
     }
-    footerPositioning: ListView.OverlayFooter
+
+    // Пустое состояние
+    Label {
+        anchors.centerIn: parent
+        visible: list.count === 0
+        text: qsTr("No contacts yet\nClick '+' to add your first contact")
+        horizontalAlignment: Text.AlignHCenter
+        font.pixelSize: 16
+        color: palette.placeholderText
+        lineHeight: 1.5
+    }
 }
