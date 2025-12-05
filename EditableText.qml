@@ -20,7 +20,7 @@ Item {
         anchors.rightMargin: 0
         text: root.field.length > 0 ? root.field : root.placeholderText
         font.pixelSize: 14
-        color: root.field.length > 0 ? palette.text : palette.placeholderText
+        color: root.field.length > 0 ? "#000000" : "#999999"
         visible: !root.editing
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignLeft
@@ -59,7 +59,7 @@ Item {
         
         background: Rectangle {
             color: "transparent"
-            border.color: palette.highlight
+            border.color: "#3daee9"
             border.width: editField.activeFocus ? 2 : 1
             radius: 2
         }

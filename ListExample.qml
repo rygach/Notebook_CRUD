@@ -63,7 +63,8 @@ ListView {
 
             // Поля контакта
             ColumnLayout {
-                Layout.fillWidth: true
+                Layout.fillWidth: false
+                Layout.preferredWidth: Math.min(list.width * 0.6, 400)
                 Layout.minimumWidth: 200
                 Layout.alignment: Qt.AlignVCenter
                 spacing: 4
@@ -130,7 +131,7 @@ ListView {
         text: qsTr("No contacts yet\nClick '+' to add your first contact")
         horizontalAlignment: Text.AlignHCenter
         font.pixelSize: 16
-        color: palette.placeholderText
+        color: "#999999"
         lineHeight: 1.5
     }
 }

@@ -25,15 +25,17 @@ if(WIN32 AND NOT DEFINED CMAKE_PREFIX_PATH)
     endforeach()
 endif()
 
-# Найдём Qt (любую из версий 5 или 6). Просим Core, Quick и Qml
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Quick Qml)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Quick Qml)
+# Найдём Qt (любую из версий 5 или 6). Просим Core, Quick, Qml, Sql, Network и PrintSupport
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Quick Qml Sql Network Test PrintSupport)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Quick Qml Sql Network Test PrintSupport)
 
 # Список исходников проекта — включаем ваши .cpp/.h и qml ресурсы
 set(PROJECT_SOURCES
     main.cpp
     contactsmodel.cpp
     contactsmodel.h
+    pdfconverter.cpp
+    pdfconverter.h
     main.qml         # <-- добавьте сюда реальный путь к main.qml в исходниках
     qml.qrc
 
@@ -57,7 +59,9 @@ if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     )
 
     target_link_libraries(Notebook_CRUD
-        PRIVATE Qt${QT_VERSION_MAJOR}::Quick Qt${QT_VERSION_MAJOR}::Qml
+        PRIVATE Qt${QT_VERSION_MAJOR}::Quick Qt${QT_VERSION_MAJOR}::Qml 
+                Qt${QT_VERSION_MAJOR}::Sql Qt${QT_VERSION_MAJOR}::Network
+                Qt${QT_VERSION_MAJOR}::PrintSupport
     )
 
     qt_import_qml_plugins(Notebook_CRUD)
@@ -74,7 +78,7 @@ else()
     endif()
 
     target_link_libraries(Notebook_CRUD
-        PRIVATE Qt5::Quick Qt5::Qml
+        PRIVATE Qt5::Quick Qt5::Qml Qt5::Sql Qt5::Network Qt5::PrintSupport
     )
 endif()
 
@@ -99,3 +103,22 @@ set_target_properties(Notebook_CRUD PROPERTIES
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
+
+# Юнит-тесты
+enable_testing()
+
+add_executable(ContactsModelTests
+    tests/test_contactsmodel.cpp
+    contactsmodel.cpp
+    contactsmodel.h
+)
+
+target_link_libraries(ContactsModelTests
+    PRIVATE Qt${QT_VERSION_MAJOR}::Test 
+            Qt${QT_VERSION_MAJOR}::Core
+            Qt${QT_VERSION_MAJOR}::Qml
+            Qt${QT_VERSION_MAJOR}::Sql
+            Qt${QT_VERSION_MAJOR}::Network
+)
+
+add_test(NAME ContactsModelTests COMMAND ContactsModelTests)

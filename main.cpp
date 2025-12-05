@@ -2,6 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QtQml>
 #include "contactsmodel.h"
+#include "pdfconverter.h"
 
 int main(int argc, char *argv[])
 {
@@ -12,6 +13,7 @@ int main(int argc, char *argv[])
 
     // регистрация типа вручную, для использования/распознавания моего QML типа в C++
     qmlRegisterType<ContactsModel>("NotebookCRUD", 1, 0, "ContactsModel");
+    qmlRegisterType<PdfConverter>("NotebookCRUD", 1, 0, "PdfConverter");
 
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));
